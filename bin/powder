@@ -233,9 +233,16 @@ module Powder
       end
     end
 
-    desc "applog", "Tails in current app"
-    def applog(env="development")
-      system "tail -f log/#{env}.log" if is_powable?
+    desc "applog", "Tails a powder app"
+    method_option :environment, :type => :string, :default => "development", :aliases => '-e', :desc => 'Environment log to tail'
+    method_option :name, :type => :string, :default => false, :alias => '-n', :desc => "The name of the powder app"
+    def applog
+      if options.name?
+        path_to_applog_file = "#{ENV['HOME']}/.pow/#{options.name}/log/#{options.environment}.log"
+        system "tail -f #{path_to_applog_file}"
+      else
+        system "tail -f log/#{options.environment}.log" if is_powable?
+      end
     end
 
     desc "uninstall", "Uninstalls pow"
